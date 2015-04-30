@@ -23,11 +23,11 @@
  */
 package dane.runescape.mapeditor;
 
-import com.runescape.FloorType;
-import com.runescape.Graphics3D;
-import com.runescape.Tile;
-import com.runescape.Scene;
-import com.runescape.SceneGraph;
+import pre194.Floor;
+import pre194.Graphics3D;
+import pre194.Tile;
+import pre194.Scene;
+import pre194.SceneGraph;
 import dane.runescape.mapeditor.event.*;
 import dane.runescape.mapeditor.media.*;
 import java.awt.*;
@@ -145,15 +145,15 @@ public class MapPanel extends JPanel implements GameListener, MouseListener, Mou
 				int underlayFloId = underlayFlos[x][y];
 				int overlayFloId = overlayFlos[x][y];
 
-				FloorType underlayFlo = null;
-				FloorType overlayFlo = null;
+				Floor underlayFlo = null;
+				Floor overlayFlo = null;
 
 				if (overlayFloId != 0) {
-					underlayFlo = FloorType.instances[overlayFloId - 1];
+					underlayFlo = Floor.instances[overlayFloId - 1];
 				}
 
 				if (underlayFloId != 0) {
-					overlayFlo = FloorType.instances[underlayFloId - 1];
+					overlayFlo = Floor.instances[underlayFloId - 1];
 				}
 
 				int drawX = (x * TILE_SIZE) + 1;
@@ -161,7 +161,7 @@ public class MapPanel extends JPanel implements GameListener, MouseListener, Mou
 
 				if (overlayFlo != null) {
 					if (overlayFlo.textureIndex >= 0) {
-						g.setColor(new Color(Graphics3D.getTextureColor(overlayFlo.textureIndex)));
+						g.setColor(new Color(Graphics3D.getAverageTextureRGB(overlayFlo.textureIndex)));
 					} else {
 						g.setColor(new Color(overlayFlo.rgb));
 					}
@@ -171,7 +171,7 @@ public class MapPanel extends JPanel implements GameListener, MouseListener, Mou
 
 				if (underlayFlo != null) {
 					if (underlayFlo.textureIndex >= 0) {
-						g.setColor(new Color(Graphics3D.getTextureColor(underlayFlo.textureIndex)));
+						g.setColor(new Color(Graphics3D.getAverageTextureRGB(underlayFlo.textureIndex)));
 					} else {
 						g.setColor(new Color(underlayFlo.rgb));
 					}
@@ -201,7 +201,7 @@ public class MapPanel extends JPanel implements GameListener, MouseListener, Mou
 
 	@Override
 	public void onSceneTileClicked(Tile t) {
-		graph.removeLocations(t.x, t.plane, t.z);
+		graph.removeLocations(t.x, t.level, t.z);
 	}
 
 	@Override

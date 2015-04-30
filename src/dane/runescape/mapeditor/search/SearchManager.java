@@ -23,10 +23,10 @@
  */
 package dane.runescape.mapeditor.search;
 
-import com.runescape.FloorType;
-import com.runescape.LocationInfo;
-import com.runescape.NPCInfo;
-import com.runescape.ObjectInfo;
+import pre194.Floor;
+import pre194.LocationInfo;
+import pre194.NPCInfo;
+import pre194.ObjectInfo;
 import dane.runescape.mapeditor.MapEditor;
 import static dane.runescape.mapeditor.search.SearchMode.FLOOR;
 import static dane.runescape.mapeditor.search.SearchMode.ITEM;
@@ -105,7 +105,7 @@ public class SearchManager {
 		// The way I would: each mode points to a class that has an Object get(int index) an int getCount().
 		switch (mode) {
 			case FLOOR: {
-				for (FloorType f : FloorType.instances) {
+				for (Floor f : Floor.instances) {
 					list.add(new Searchable(f.name, f.index, FLOOR));
 				}
 				break;

@@ -23,20 +23,22 @@
  */
 package dane.runescape.mapeditor.swing;
 
-import dane.runescape.mapeditor.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.*;
-import java.io.*;
-import java.util.logging.*;
+import dane.runescape.mapeditor.util.Files;
+import dane.runescape.mapeditor.util.Hotkeys;
+
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Contains all the hotkey buttons for all the different location types.
  *
  * @author Dane
  */
-// TODO: rename?
 public class LocationPanel extends JPanel {
 
 	private static final Logger logger = Logger.getLogger(LocationPanel.class.getName());
@@ -51,7 +53,7 @@ public class LocationPanel extends JPanel {
 	 * @throws IOException
 	 */
 	private static BufferedImage getHotkeyImage(String name) throws IOException {
-		return FileUtil.readImage("loctype/" + name + ".png");
+		return Files.readImage("loctype/" + name + ".png");
 	}
 
 	public LocationPanel() {
@@ -95,11 +97,12 @@ public class LocationPanel extends JPanel {
 			for (Component c : getComponents()) {
 				if (c instanceof HotkeyButton) {
 					HotkeyButton h = (HotkeyButton) c;
-					Hotkey.add(h, h.getKey(), h.getAction());
+					Hotkeys.add(h, h.getKey(), h.getAction());
 				}
 			}
 		} catch (Exception e) {
 			logger.log(Level.WARNING, "Error loading location panel", e);
+			e.printStackTrace();
 		}
 	}
 

@@ -21,32 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dane.runescape.mapeditor.event;
-
-import pre194.Tile;
-import pre194.Scene;
-import pre194.SceneGraph;
-import java.util.*;
+package dane.runescape.mapeditor.util;
 
 /**
+ * Maths!
  *
  * @author Dane
  */
-public interface GameListener extends EventListener {
+public class Maths {
 
-	/**
-	 * Called when the scene has been loaded.
-	 *
-	 * @param plane the plane the scene loaded on.
-	 * @param scene the scene.
-	 * @param graph the scene graph.
-	 */
-	void onSceneLoaded(int plane, Scene scene, SceneGraph graph);
+	public static final double TWO_PI = Math.PI * 2;
 
-	/**
-	 * Called when a tile in the scene has been clicked.
-	 *
-	 * @param t the tile.
-	 */
-	void onSceneTileClicked(Tile t);
+	public static final int toRuneDegree(double a) {
+		return (int) ((a * 2048) / TWO_PI) & 0x7FF;
+	}
+
+	public static final double toRadian(int a) {
+		return (a * TWO_PI) / 2048.0;
+	}
+
+	public static final double toDegree(int a) {
+		return (a * 360) / 2048.0;
+	}
 }

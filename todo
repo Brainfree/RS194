@@ -1,0 +1,18 @@
+general:
+
+create more opcode constants for client to server packets
+figure out better names for scene's wall flag junk
+split long functions into series of smaller functions (see pre194.Game#updateGame() for example)
+
+
+specific:
+
+refactor BZip2 classes, or figure out way to append BZh1 to beginning of bytes before unzipping without creating much garbage.
+    idea: archives read 6 bytes at the beginning, so we could write BZh1 at pos 0 and arraycopy from pos 6...length, to pos 4, shifting data back 2 bytes at the cost of performance. (probably not much at all if any)
+
+make the WavPlayer actually do something.
+
+
+possibilities:
+
+remove rs317 package. this would make maps not work anymore as the maps loaded are somewhere in the #300 revisions, and the models used are loaded by the classes within the rs317 package.

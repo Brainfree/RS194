@@ -21,32 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dane.runescape.mapeditor.event;
+package dane.runescape.mapeditor.util;
 
-import pre194.Tile;
-import pre194.Scene;
-import pre194.SceneGraph;
-import java.util.*;
+import java.awt.event.KeyEvent;
+
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 
 /**
+ * Used to create global hotkeys.
  *
  * @author Dane
  */
-public interface GameListener extends EventListener {
+public class Hotkeys {
 
-	/**
-	 * Called when the scene has been loaded.
-	 *
-	 * @param plane the plane the scene loaded on.
-	 * @param scene the scene.
-	 * @param graph the scene graph.
-	 */
-	void onSceneLoaded(int plane, Scene scene, SceneGraph graph);
+	public static final void add(JComponent src, int keyCode, Action action) {
+		add(src, keyCode, KeyEvent.VK_UNDEFINED, action);
+	}
 
-	/**
-	 * Called when a tile in the scene has been clicked.
-	 *
-	 * @param t the tile.
-	 */
-	void onSceneTileClicked(Tile t);
+	public static final void add(JComponent src, int keyCode, int modifiers, Action action) {
+		KeyStroke key = KeyStroke.getKeyStroke(keyCode, modifiers);
+		src.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(key, key.toString());
+		src.getActionMap().put(key.toString(), action);
+	}
+
+	public static final void remove(JComponent src, KeyStroke key) {
+		src.getInputMap().remove(key);
+		src.getActionMap().remove(key.toString());
+	}
+
 }

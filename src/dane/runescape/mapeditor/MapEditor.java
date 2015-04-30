@@ -23,8 +23,7 @@
  */
 package dane.runescape.mapeditor;
 
-import com.runescape.Signlink;
-import static dane.runescape.mapeditor.event.SearchEvent.Type.*;
+import pre194.Signlink;
 import dane.runescape.mapeditor.event.*;
 import dane.runescape.mapeditor.search.*;
 import dane.runescape.mapeditor.swing.*;
@@ -179,7 +178,7 @@ public final class MapEditor extends JFrame implements ShellListener, SearchEven
 		searchPanel.assemble();
 		panelBottomLeft.add(searchPanel);
 
-		// LOC Hotkey Panel
+		// LOC Hotkeys Panel
 		locTypePanel = new LocationPanel();
 		locTypePanel.assemble();
 		panelBottomRight.add(locTypePanel);

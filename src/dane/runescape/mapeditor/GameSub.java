@@ -23,9 +23,10 @@
  */
 package dane.runescape.mapeditor;
 
-import com.runescape.*;
 import dane.runescape.mapeditor.event.*;
 import dane.runescape.mapeditor.util.*;
+import pre194.*;
+
 import java.util.logging.*;
 
 /**
@@ -51,7 +52,7 @@ public class GameSub extends Game implements MapPanelEventListener {
 	}
 
 	@Override
-	public void startup() {
+	public void load() {
 		try {
 			Game.setHighMemory();
 
@@ -85,15 +86,15 @@ public class GameSub extends Game implements MapPanelEventListener {
 
 	@Override
 	public void readLandscape(Scene s, byte[] src, int baseTileX, int baseTileY) {
-		s.readLandscape(src, baseTileX, baseTileY, mapCenterChunkX * 8, mapCenterChunkY * 8);
+		s.readLandscape(src, baseTileX, baseTileY, centerSectorX * 8, centerSectorY * 8);
 	}
 
 	public void loadRegion(int x, int y) {
-		mapCenterChunkX = x << 3;
-		mapCenterChunkY = y << 3;
+		centerSectorX = x << 3;
+		centerSectorY = y << 3;
 
-		mapBaseX = mapCenterChunkX << 3;
-		mapBaseY = mapCenterChunkY << 3;
+		mapBaseX = centerSectorX << 3;
+		mapBaseY = centerSectorY << 3;
 
 		mapLandData = new byte[1][];
 		mapLocData = new byte[1][];
@@ -110,7 +111,7 @@ public class GameSub extends Game implements MapPanelEventListener {
 		mapLastBaseZ = mapBaseY;
 
 		sceneState = 2;
-		Scene.builtPlane = currentPlane;
+		Scene.levelBuilt = currentLevel;
 		createScene();
 	}
 
@@ -123,7 +124,7 @@ public class GameSub extends Game implements MapPanelEventListener {
 
 	@Override
 	public int updateCamera(int tileX, int tileY) {
-		int landY = getLandY(0, 0, currentPlane);
+		int landY = getLandY(0, 0, currentLevel);
 
 		cameraPitch = camera.getCurrentPitch();
 		cameraOrbitPitch = cameraPitch;
@@ -134,19 +135,19 @@ public class GameSub extends Game implements MapPanelEventListener {
 		updateCameraOrbit(camera.getCurrentX(), landY - 50, camera.getCurrentZ(), camera.getCurrentYaw(), cameraPitch, (cameraPitch * 3) + 1200);
 
 		try {
-			if ((renderflags[currentPlane][tileX][tileY] & 0x4) != 0) {
-				return currentPlane;
+			if ((levelRenderFlags[currentLevel][tileX][tileY] & 0x4) != 0) {
+				return currentLevel;
 			}
 		} catch (Exception ignored) {
 
 		}
 
 		try {
-			return getTopPlane(tileX, tileY);
+			return getTopLevel(tileX, tileY);
 		} catch (Exception ignored) {
 
 		}
-		return currentPlane;
+		return currentLevel;
 	}
 
 	@Override
@@ -166,7 +167,7 @@ public class GameSub extends Game implements MapPanelEventListener {
 		drawSpotAnimations();
 		drawAnimatedLocations();
 
-		int topPlane = updateCamera(camera.getCurrentX() >> 7, camera.getCurrentY() >> 7);
+		int topLevel = updateCamera(camera.getCurrentX() >> 7, camera.getCurrentY() >> 7);
 
 		int startCycle = Graphics3D.cycle;
 		Model.allowInput = true;
@@ -179,19 +180,19 @@ public class GameSub extends Game implements MapPanelEventListener {
 		Scene.mouseX = Model.mouseX;
 		Scene.mouseY = Model.mouseY;
 
-		graph.draw(cameraX, cameraY, cameraZ, cameraPitch, cameraOrbitYaw, topPlane);
+		graph.draw(cameraX, cameraY, cameraZ, cameraPitch, cameraOrbitYaw, topLevel);
 		graph.clearFrameLocs();
 
 		for (int i = 0; i < SceneGraph.activeOccluderCount; i++) {
-			Occluder o = SceneGraph.activeOcludders[i];
+			Occluder o = SceneGraph.activeOccluders[i];
 
 			setDrawPos(o.minX, o.minY, o.minZ);
-			Graphics2D.fillRect(viewportDrawX - 1, viewportDrawY - 1, 3, 3, 0xFF0000);
-			fontSmall.draw(o.type + ", " + o.testDirection, viewportDrawX, viewportDrawY, 0xFF0000);
+			Graphics2D.fillRect(drawX - 1, drawY - 1, 3, 3, 0xFF0000);
+			fontSmall.draw(o.type + ", " + o.testDirection, drawX, drawY, 0xFF0000);
 
 			setDrawPos(o.maxX, o.maxY, o.maxZ);
-			Graphics2D.fillRect(viewportDrawX - 1, viewportDrawY - 1, 3, 3, 0xFF00);
-			fontSmall.draw(o.type + ", " + o.testDirection, viewportDrawX, viewportDrawY, 0xFF0000);
+			Graphics2D.fillRect(drawX - 1, drawY - 1, 3, 3, 0xFF00);
+			fontSmall.draw(o.type + ", " + o.testDirection, drawX, drawY, 0xFF0000);
 		}
 
 		drawViewport2d();
@@ -318,7 +319,7 @@ public class GameSub extends Game implements MapPanelEventListener {
 	}
 
 	@Override
-	public void interactWithLoc(int bitset, int x, int y, int opcode) {
+	public void interactWithLocation(int bitset, int x, int y, int opcode) {
 		crossX = clickX;
 		crossY = clickY;
 		crossType = 2;
@@ -344,16 +345,16 @@ public class GameSub extends Game implements MapPanelEventListener {
 	@Override
 	public Scene createScene() {
 		Scene s = super.createScene();
-		this.fireSceneCreated(this.currentPlane, s, this.graph);
+		this.fireSceneCreated(this.currentLevel, s, this.graph);
 		return s;
 	}
 
-	protected void fireSceneCreated(int plane, Scene s, SceneGraph land) {
+	protected void fireSceneCreated(int level, Scene s, SceneGraph graph) {
 		for (GameListener l : this.listeners.getListeners(GameListener.class)) {
-			l.onSceneLoaded(plane, s, land);
+			l.onSceneLoaded(level, s, graph);
 		}
 
-		land.addObject(new Model(0), 0, 21, 26, 400, 123);
+		graph.addObject(new Model(0), 0, 21, 26, 400, 123);
 	}
 
 	/**
@@ -378,7 +379,7 @@ public class GameSub extends Game implements MapPanelEventListener {
 	public void onMapPanelEvent(MapPanelEvent e) {
 		switch (e.getType()) {
 			case ANGLE_CHANGE: {
-				this.camera.setYaw(MathUtil.toRuneDegree(e.getAngle()) & 0x7FF);
+				this.camera.setYaw(Maths.toRuneDegree(e.getAngle()) & 0x7FF);
 				break;
 			}
 			case TILE_CHANGE: {

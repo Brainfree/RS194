@@ -26,8 +26,6 @@ package dane.runescape.mapeditor;
 import java.awt.Point;
 
 /**
- * TODO: find a better place for this.
- *
  * @author Dane
  */
 public class OrbitCamera {
